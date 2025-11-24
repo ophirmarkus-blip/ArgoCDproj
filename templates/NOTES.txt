@@ -1,3 +1,21 @@
+🔐 AUTHENTICATION
+{{- if not .Values.auth.existingSecret }}
+
+Your code-server password has been auto-generated and stored in a Kubernetes secret.
+
+To retrieve your password, run:
+  kubectl get secret {{ include "coder-project.fullname" . }}-secret -n {{ .Release.Namespace }} -o jsonpath="{.data.password}" | base64 -d && echo
+
+{{- else }}
+
+Using existing secret: {{ .Values.auth.existingSecret }}
+
+To retrieve your password, run:
+  kubectl get secret {{ .Values.auth.existingSecret }} -n {{ .Release.Namespace }} -o jsonpath="{.data.{{ .Values.auth.existingSecretPasswordKey }}}" | base64 -d && echo
+{{- end }}
+
+🌐 ACCESS YOUR APPLICATION
+
 1. Get the application URL by running these commands:
 {{- if .Values.httpRoute.enabled }}
 {{- if .Values.httpRoute.hostnames }}

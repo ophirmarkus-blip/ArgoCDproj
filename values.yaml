@@ -12,7 +12,13 @@ service:
 
 # Authentication
 auth:
-  password: "changeme123"  # Should use a Secret!
+  # Leave empty to auto-generate random passwords on first install
+  password: ""
+  sudoPassword: ""
+  # Or use an existing secret
+  existingSecret: ""
+  existingSecretPasswordKey: "password"
+  existingSecretSudoKey: "sudo-password"
 
 # Persistent storage
 persistence:
@@ -36,18 +42,13 @@ securityContext:
   runAsGroup: 1000
   fsGroup: 1000
 
-# Install extra packages
-env:
-  - name: PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: code-server-secret
-        key: password
-  - name: SUDO_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: code-server-secret
-        key: sudo-password
+# Environment variables
+# Note: PASSWORD and SUDO_PASSWORD are automatically injected from the secret
+# You can add additional env vars here
+env: []
+# Example:
+#  - name: CUSTOM_VAR
+#    value: "custom-value"
 
 # Probes
 livenessProbe:
