@@ -1,0 +1,129 @@
+replicaCount: 1
+
+image:
+  repository: codercom/code-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 8080
+  targetPort: 8080
+
+# Authentication
+auth:
+  password: "changeme123"  # Should use a Secret!
+
+# Persistent storage
+persistence:
+  enabled: true
+  storageClass: "gp3"  # AWS EBS
+  accessMode: ReadWriteOnce
+  size: 20Gi
+  
+# Resource limits
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+# Security
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Install extra packages
+env:
+  - name: PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: code-server-secret
+        key: password
+  - name: SUDO_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: code-server-secret
+        key: sudo-password
+
+# Probes
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 5
+
+# Service Account
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+# Pod annotations and labels
+podAnnotations: {}
+podLabels: {}
+
+# Pod security context
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# Image pull secrets (if using private registry)
+imagePullSecrets: []
+
+# Volume mounts and volumes (for code-server)
+volumeMounts: []
+volumes: []
+
+# Node selector
+nodeSelector: {}
+
+# Affinity rules
+affinity: {}
+
+# Tolerations
+tolerations: []
+
+# Autoscaling (disabled by default for code-server)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Ingress (disabled by default, using LoadBalancer instead)
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# HTTPRoute (Gateway API - disabled by default)
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  hostnames: []
+  rules: []
