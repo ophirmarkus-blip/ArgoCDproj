@@ -33,7 +33,7 @@ resources:
     cpu: 500m
     memory: 1Gi
   limits:
-    cpu: 2000m
+    cpu: '2'
     memory: 4Gi
 
 # Security
@@ -77,8 +77,8 @@ podAnnotations: {}
 podLabels: {}
 
 # Pod security context
-podSecurityContext:
-  fsGroup: 1000
+# podSecurityContext:
+#   fsGroup: 1000
 
 # Image pull secrets (if using private registry)
 imagePullSecrets: []
